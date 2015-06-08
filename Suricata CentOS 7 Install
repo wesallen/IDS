@@ -1,0 +1,63 @@
+
+####updates and prereqs
+su
+yum update
+rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum install wget kernel-headers flex bison gcc gcc-c++ make kernel-devel man man-pages libpcap libpcap-devel libnet libnet-devel pcre pcre-devel automake autoconf libtool libyaml libyaml-devel numactl-devel zlib zlib-devel jansson-devel file file-devel subversion 
+
+###restart
+shutdown -r 1
+
+###get software
+cd Download
+su
+wget https://people.redhat.com/sgrubb/libcap-ng/libcap-ng-0.7.7.tar.gz
+wget http://sourceforge.net/projects/ntop/files/PF_RING/PF_RING-6.0.3.tar.gz
+wget http://www.openinfosecfoundation.org/download/suricata-2.0.8.tar.gz
+#### wget http://www.openinfosecfoundation.org/download/suricata-2.1beta4.tar.gz
+tar -xzf libcap-ng-0.7.7.tar.gz 
+tar -xzf PF_RING-6.0.3.tar.gz 
+tar -xzf suricata-2.1beta4.tar.gz
+
+###install PF_RING
+
+cd PF_RING-6.0.3/kernel/
+make && make install
+cd ../userland/lib
+./configure --prefix=/usr/local/pfring && make && make install
+cd ../libpcap-1.6.2-ring/
+./configure --prefix=/usr/local/pfring && make && make install
+cd ../tcpdump-4.1.1/
+./configure --prefix=/usr/local/pfring && make && make install
+
+###Lib path
+nano /etc/ld.so.conf.d/pfring.conf to add this line: /usr/local/pfring/lib
+ldconfig
+
+###enable pf_ring
+sudo modprobe pf_ring transparent_mode=0 min_num_slots=65534
+cat /proc/net/pf_ring/info
+cd ../../../
+ 
+###libpcap-ng to drop priv
+cd libcap-ng-0.7.7
+./configure 
+make 
+make install
+
+###install suricata
+cd suricata-2.1beta4
+./configure --with-libpcap-includes=/usr/local/pfring/include --with-libpcap-libraries=/usr/local/pfring/lib --enable-pfring --with-libpfring-includes=/usr/local/pfring/include --with-libpfring-libraries=/usr/local/pfring/lib 
+make
+make install-full
+ldconfig
+suricata --build-info
+
+###setup user for suricata
+useradd suser
+passwd suser
+chown -R root:suser /usr/local/var/log/suricata
+chmod -R 775 /usr/local/var/log/suricata
+
+#####start suricata as suser
+/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suser --group=suser
