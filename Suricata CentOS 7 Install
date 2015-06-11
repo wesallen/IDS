@@ -9,6 +9,7 @@ yum install wget kernel-headers flex bison gcc gcc-c++ make kernel-devel man man
 shutdown -r 1
 
 ###get software
+mkdir Download
 cd Download
 su
 wget https://people.redhat.com/sgrubb/libcap-ng/libcap-ng-0.7.7.tar.gz
@@ -54,10 +55,9 @@ ldconfig
 suricata --build-info
 
 ###setup user for suricata
-useradd suser
-passwd suser
-chown -R root:suser /usr/local/var/log/suricata
-chmod -R 775 /usr/local/var/log/suricata
+useradd suri
+passwd suri
+chown -R root:suri /usr/local/var/log/suricata
 
-#####start suricata as suser
-/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suser --group=suser
+#####start suricata as suri
+/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suri --group=suri
