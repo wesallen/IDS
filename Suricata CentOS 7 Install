@@ -59,4 +59,4 @@ passwd suri
 chown -R root:suri /usr/local/var/log/suricata
 
 #####start suricata as suri
-/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suri --group=suri
+/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D --pfring-int=eth1 --user=suri --group=suri
