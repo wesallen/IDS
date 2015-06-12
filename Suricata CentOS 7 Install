@@ -58,5 +58,7 @@ useradd suri
 passwd suri
 chown -R root:suri /usr/local/var/log/suricata
 
-#####start suricata as suri
-/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D --pfring-int=eth1 --user=suri --group=suri
+#####start suricata as suri, no pf_ring support
+/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suri --group=suri
+#####start suricata as root, with pf_ring support
+/usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml --pfring-int=eth1 --pfring-cluster-id=99 --pfring-cluster-type=cluster_flow
