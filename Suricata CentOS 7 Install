@@ -57,6 +57,7 @@ suricata --build-info
 useradd suri
 passwd suri
 chown -R root:suri /usr/local/var/log/suricata
+chmod -R 775 /usr/local/var/log/suricata
 
 #####start suricata as suri, no pf_ring support
 /usr/local/bin/suricata -c /usr/local/etc/suricata/suricata.yaml -D -i eth1 --user=suri --group=suri
